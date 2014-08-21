@@ -1,0 +1,35 @@
+package ratpack.example.java;
+
+import com.google.inject.AbstractModule;
+import com.google.inject.Injector;
+import ratpack.guice.HandlerDecoratingModule;
+import ratpack.handling.Handler;
+
+import static java.util.Arrays.asList;
+import static ratpack.handling.Handlers.chain;
+
+/**
+ * An example Guice module.
+ */
+public class CustomerModule extends AbstractModule implements HandlerDecoratingModule {
+
+    /**
+     * Adds a service impl to the application.
+     *
+     * @see CustomerHandler
+     */
+    protected void configure() {
+        bind(CustomerService.class).to(CustomerServiceImpl.class);
+    }
+
+    /**
+     * Modules that implement {@link ratpack.guice.HandlerDecoratingModule} are able to decorate the application handler in some way.
+     * <p/>
+     * In this case, we are wrapping that app handler in a logging handler so that all requests are logged
+     *
+     * @see ratpack.guice.HandlerDecoratingModule
+     */
+    public Handler decorate(Injector injector, Handler handler) {
+        return chain(asList(new LoggingHandler(), handler));
+    }
+}
